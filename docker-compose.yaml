@@ -8,7 +8,10 @@ volumes:
 
 services: 
     vote: 
-      image: schoolofdevops/vote
+      image: phigor/vote:miniprj_1
+      build:
+        context: ./vode
+        dockerfile: Dockerfile
       ports: 
         - 80
       networks: 
@@ -22,21 +25,30 @@ services:
         - vote
     
     worker: 
-      image: initcron/worker:v2
+      image: phigor/worker:miniprj_1
+      build:
+        context: ./worker
+        dockerfile: Dockerfile
       networks: 
         - vote
       depends_on: 
         - redis
+        - db
  
     db: 
       image: postgres:9.4
+      environment:
+        - POSTGRES_HOST_AUTH_METHOD=trust
       networks: 
         - vote
       volumes:
         - "db-data:/var/lib/postgresql/data"
    
     results: 
-      image: schoolofdevops/vote-result
+      image: phigor/result:miniprj_1
+      build:
+        context: ./result
+        dockerfile: Dockerfile
       ports:
         - 5001:80
       depends_on: 
